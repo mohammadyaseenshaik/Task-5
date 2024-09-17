@@ -1,0 +1,84 @@
+org 100h
+
+jmp start
+
+msg1: db "quotient of two 8-bit numbers is: ", 0Dh, 0Ah, 24h
+msg: db "", 0Dh, 0Ah, 24h
+msg2: db "remainder of two 8-bit numbers is: ", 0Dh, 0Ah, 24h
+
+start:
+; Display the quotient message
+mov dx, msg1
+mov ah, 09h
+int 21h
+
+; Initialize numerator and denominator
+mov ax, 0FFh      ; AX = 255 (numerator)
+mov bl, 07h       ; BL = 7 (denominator)
+
+; Perform division (AX / BL)
+div bl            ; Quotient in AL, remainder in AH
+
+; Store quotient for output (AL = quotient)
+mov bl, al        ; Save quotient in BL
+mov bh, ah        ; Save remainder in BH
+
+; Process the quotient (BL)
+and al, 0F0h      ; Mask higher nibble
+shr al, 4         ; Shift to lower nibble
+add al, 30h       ; Convert to ASCII
+cmp al, 39h       ; Check if it's a digit
+jle first
+add al, 7h        ; Adjust for A-F if needed
+
+first:
+mov dl, al
+mov ah, 02h
+int 21h           ; Print first character of quotient
+
+mov al, bl        ; Get lower nibble
+and al, 0Fh       ; Mask higher nibble
+add al, 30h       ; Convert to ASCII
+cmp al, 39h       ; Check if it's a digit
+jle second
+add al, 7h        ; Adjust for A-F if needed
+
+second:
+mov dl, al
+mov ah, 02h
+int 21h           ; Print second character of quotient
+
+; Print the remainder message
+mov dx, msg2
+mov ah, 09h
+int 21h
+
+; Process the remainder (BH)
+mov bl, bh
+and bl, 0F0h      ; Mask higher nibble
+shr bl, 4         ; Shift to lower nibble
+add bl, 30h       ; Convert to ASCII
+cmp bl, 39h       ; Check if it's a digit
+jle third
+add bl, 7h        ; Adjust for A-F if needed
+
+third:
+mov dl, bl
+mov ah, 02h
+int 21h           ; Print first character of remainder
+
+mov bl, bh        ; Get lower nibble
+and bl, 0Fh       ; Mask higher nibble
+add bl, 30h       ; Convert to ASCII
+cmp bl, 39h       ; Check if it's a digit
+jle fourth
+add bl, 7h        ; Adjust for A-F if needed
+
+fourth:
+mov dl, bl
+mov ah, 02h
+int 21h           ; Print second character of remainder
+
+ret
+
+

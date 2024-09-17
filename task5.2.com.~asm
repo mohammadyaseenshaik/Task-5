@@ -1,0 +1,146 @@
+org 100h                                                                                                                    org 100org 100org 100h
+
+jmp start
+
+msg1: db "Remainder of two 16-bit numbers is: ", 0Dh, 0Ah, 24h
+msg:  db "", 0Dh, 0Ah, 24h
+msg2: db "Quotient of two 16-bit numbers is: ", 0Dh, 0Ah, 24h
+
+start:
+; Display the remainder message
+mov dx, msg1
+mov ah, 09h
+int 21h
+
+; Initialize dividend and divisor
+mov dx, 0000h      ; DX:AX = 0FFFh (dividend)
+mov ax, 0FFFh      ; AX = lower part of dividend
+mov bx, 0091h      ; BX = divisor (145)
+
+; Perform division (DX:AX / BX)
+div bx             ; Quotient in AX, remainder in DX
+
+; Process remainder in DX
+mov cx, dx         ; Move remainder to CX
+
+; Process higher nibble of CH (remainder high byte)
+mov ah, ch
+and ah, 0F0h       ; Mask higher nibble
+shr ah, 4          ; Shift to lower nibble
+add ah, 30h        ; Convert to ASCII
+cmp ah, 39h        ; Check if it's a digit
+jle first
+add ah, 7h         ; Adjust for A-F if needed
+
+first:
+mov dl, ah
+mov ah, 02h
+int 21h            ; Print first digit of remainder high byte
+
+; Process lower nibble of CH (remainder high byte)
+mov ah, ch
+and ah, 0Fh        ; Mask higher nibble
+add ah, 30h        ; Convert to ASCII
+cmp ah, 39h        ; Check if it's a digit
+jle second
+add ah, 7h         ; Adjust for A-F if needed
+
+second:
+mov dl, ah
+mov ah, 02h
+int 21h            ; Print second digit of remainder high byte
+
+; Process higher nibble of CL (remainder low byte)
+mov ah, cl
+and ah, 0F0h       ; Mask higher nibble
+shr ah, 4          ; Shift to lower nibble
+add ah, 30h        ; Convert to ASCII
+cmp ah, 39h        ; Check if it's a digit
+jle third
+add ah, 7h         ; Adjust for A-F if needed
+
+third:
+mov dl, ah
+mov ah, 02h
+int 21h            ; Print first digit of remainder low byte
+
+; Process lower nibble of CL (remainder low byte)
+mov ah, cl
+and ah, 0Fh        ; Mask higher nibble
+add ah, 30h        ; Convert to ASCII
+cmp ah, 39h        ; Check if it's a digit
+jle fourth
+add ah, 7h         ; Adjust for A-F if needed
+
+fourth:
+mov dl, ah
+mov ah, 02h
+int 21h            ; Print second digit of remainder low byte
+
+; Print the quotient message
+mov dx, msg2
+mov ah, 09h
+int 21h
+
+; Process quotient in AX
+mov bx, ax         ; Move quotient to BX
+
+; Process higher nibble of BH (quotient high byte)
+mov ah, bh
+and ah, 0F0h       ; Mask higher nibble
+shr ah, 4          ; Shift to lower nibble
+add ah, 30h        ; Convert to ASCII
+cmp ah, 39h        ; Check if it's a digit
+jle fifth
+add ah, 7h         ; Adjust for A-F if needed
+
+fifth:
+mov dl, ah
+mov ah, 02h
+int 21h            ; Print first digit of quotient high byte
+
+; Process lower nibble of BH (quotient high byte)
+mov ah, bh
+and ah, 0Fh        ; Mask higher nibble
+add ah, 30h        ; Convert to ASCII
+cmp ah, 39h        ; Check if it's a digit
+jle sixth
+add ah, 7h         ; Adjust for A-F if needed
+
+sixth:
+mov dl, ah
+mov ah, 02h
+int 21h            ; Print second digit of quotient high byte
+
+; Process higher nibble of BL (quotient low byte)
+mov ah, bl
+and ah, 0F0h       ; Mask higher nibble
+shr ah, 4          ; Shift to lower nibble
+add ah, 30h        ; Convert to ASCII
+cmp ah, 39h        ; Check if it's a digit
+jle seventh
+add ah, 7h         ; Adjust for A-F if needed
+
+seventh:
+mov dl, ah
+mov ah, 02h
+int 21h            ; Print first digit of quotient low byte
+
+; Process lower nibble of BL (quotient low byte)
+mov ah, bl
+and ah, 0Fh        ; Mask higher nibble
+add ah, 30h        ; Convert to ASCII
+cmp ah, 39h        ; Check if it's a digit
+jle eighth
+add ah, 7h         ; Adjust for A-F if needed
+
+eighth:
+mov dl, ah
+mov ah, 02h
+int 21h            ; Print second digit of quotient low byte
+
+; Terminate program
+mov ah, 4Ch
+int 21h
+
+
